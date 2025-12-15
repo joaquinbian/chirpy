@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chirpy/internal/utils"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -37,7 +38,9 @@ func handleValidateChirpy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = writeJSON(w, http.StatusOK, Envelope{"valid": true})
+	cleanedWord := utils.CleanMessageProfane(params.Body)
+
+	err = writeJSON(w, http.StatusOK, Envelope{"cleaned_body": cleanedWord})
 
 	if err != nil {
 		fmt.Errorf("Error marshalling error: %v", err)
