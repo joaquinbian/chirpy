@@ -23,19 +23,29 @@ func main() {
 		fileserverHits: atomic.Int32{},
 	}
 
-	mux.HandleFunc("/healthz", handleHealth)
+	mux.HandleFunc("GET /api/healthz", handleHealth)
+	mux.HandleFunc("POST /api/validate_chirp", handleValidateChirpy)
 
 	mux.Handle("/app/", cfg.middlewareIncHits(http.StripPrefix("/app", http.FileServer(http.Dir(".")))))
-	mux.HandleFunc("/metrics", cfg.handleCountRequests)
-	mux.HandleFunc("/reset", cfg.handleResetCount)
+	mux.HandleFunc("GET /admin/metrics", cfg.handleCountRequests)
+	mux.HandleFunc("POST /admin/reset", cfg.handleResetCount)
 
 	fmt.Println("server up and listening in 8080!")
 	server.ListenAndServe()
 }
 
 func (cfg *apiConfig) handleCountRequests(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.Write([]byte(fmt.Sprintf("Hits: %d", cfg.fileserverHits.Load())))
+	w.Header().Set("Content-Type", "text/htlm; charset=utf-8")
+
+	html := `
+<html>
+  <body>
+    <h1>Welcome, Chirpy Admin</h1>
+    <p>Chirpy has been visited %d times!</p>
+  </body>
+</html>`
+
+	w.Write([]byte(fmt.Sprintf(html, cfg.fileserverHits.Load())))
 }
 func (cfg *apiConfig) middlewareIncHits(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
