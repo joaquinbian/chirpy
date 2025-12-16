@@ -1,17 +1,33 @@
 package main
 
 import (
+	"chirpy/internal/database"
+	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"sync/atomic"
 	"time"
+
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type apiConfig struct {
 	fileserverHits atomic.Int32
+	db             *database.Queries
 }
 
 func main() {
+	godotenv.Load()
+
+	dbUrl := os.Getenv("DB_URL")
+	db, err := sql.Open("postgres", dbUrl)
+
+	if err != nil {
+		log.Fatalf("error connecting to db: %w", err)
+	}
 
 	mux := http.NewServeMux()
 	server := &http.Server{
@@ -19,8 +35,12 @@ func main() {
 		Addr:        ":8080",
 		IdleTimeout: 10 * time.Second,
 	}
+
+	queries := database.New(db)
+
 	var cfg = &apiConfig{
 		fileserverHits: atomic.Int32{},
+		db:             queries,
 	}
 
 	mux.HandleFunc("GET /api/healthz", handleHealth)

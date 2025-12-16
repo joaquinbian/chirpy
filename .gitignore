@@ -1,3 +1,4 @@
 *.http
 notes.md
 chirpy
+.env
