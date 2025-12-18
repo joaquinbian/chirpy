@@ -16,7 +16,7 @@ INSERT INTO users(
     updated_at, 
     email
     ) VALUES(
-        get_random_uuid(),
+        gen_random_uuid(),
         NOW(),
         NOW(),
         $1
@@ -34,4 +34,13 @@ func (q *Queries) CreateUser(ctx context.Context, email string) (User, error) {
 		&i.Email,
 	)
 	return i, err
+}
+
+const deleteUsers = `-- name: DeleteUsers :exec
+DELETE FROM Users
+`
+
+func (q *Queries) DeleteUsers(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteUsers)
+	return err
 }

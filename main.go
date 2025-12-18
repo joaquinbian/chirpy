@@ -17,12 +17,14 @@ import (
 type apiConfig struct {
 	fileserverHits atomic.Int32
 	db             *database.Queries
+	mode           string
 }
 
 func main() {
 	godotenv.Load()
 
 	dbUrl := os.Getenv("DB_URL")
+	mode := os.Getenv("PLATFORM")
 	db, err := sql.Open("postgres", dbUrl)
 
 	if err != nil {
@@ -41,15 +43,16 @@ func main() {
 	var cfg = &apiConfig{
 		fileserverHits: atomic.Int32{},
 		db:             queries,
+		mode:           mode,
 	}
 
 	mux.HandleFunc("GET /api/healthz", handleHealth)
 	mux.HandleFunc("POST /api/validate_chirp", handleValidateChirpy)
-	mux.HandleFunc("POST /api/users", handleCreateUsers)
+	mux.HandleFunc("POST /api/users", cfg.handleCreateUsers)
 
 	mux.Handle("/app/", cfg.middlewareIncHits(http.StripPrefix("/app", http.FileServer(http.Dir(".")))))
 	mux.HandleFunc("GET /admin/metrics", cfg.handleCountRequests)
-	mux.HandleFunc("POST /admin/reset", cfg.handleResetCount)
+	mux.Handle("POST /admin/reset", cfg.middlewareDevMode(http.HandlerFunc(cfg.handleResetState)))
 
 	fmt.Println("server up and listening in 8080!")
 	server.ListenAndServe()
@@ -68,9 +71,20 @@ func (cfg *apiConfig) handleCountRequests(w http.ResponseWriter, r *http.Request
 
 	w.Write([]byte(fmt.Sprintf(html, cfg.fileserverHits.Load())))
 }
+
 func (cfg *apiConfig) middlewareIncHits(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cfg.fileserverHits.Add(1)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (cfg *apiConfig) middlewareDevMode(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if cfg.mode != "dev" {
+			writeJSON(w, http.StatusForbidden, Envelope{"error": "forbidden request"})
+			return
+		}
 		next.ServeHTTP(w, r)
 	})
 }

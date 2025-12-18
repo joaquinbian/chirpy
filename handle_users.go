@@ -50,5 +50,8 @@ func (cfg *apiConfig) handleCreateUsers(w http.ResponseWriter, r *http.Request) 
 		Email:     u.Email,
 	}
 
-	writeJSON(w, http.StatusCreated, Envelope{"user": user})
+	w.WriteHeader(http.StatusCreated)
+	js, err := json.MarshalIndent(user, "", "  ")
+	w.Write(js)
+
 }

@@ -5,9 +5,13 @@ INSERT INTO users(
     updated_at, 
     email
     ) VALUES(
-        get_random_uuid(),
+        gen_random_uuid(),
         NOW(),
         NOW(),
         $1
     )
     RETURNING *;
+
+
+-- name: DeleteUsers :exec
+DELETE FROM Users;
