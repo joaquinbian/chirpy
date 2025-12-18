@@ -45,6 +45,7 @@ func main() {
 
 	mux.HandleFunc("GET /api/healthz", handleHealth)
 	mux.HandleFunc("POST /api/validate_chirp", handleValidateChirpy)
+	mux.HandleFunc("POST /api/users", handleCreateUsers)
 
 	mux.Handle("/app/", cfg.middlewareIncHits(http.StripPrefix("/app", http.FileServer(http.Dir(".")))))
 	mux.HandleFunc("GET /admin/metrics", cfg.handleCountRequests)
