@@ -30,7 +30,7 @@ func (cfg *apiConfig) handleCreateUsers(w http.ResponseWriter, r *http.Request) 
 	err := decoder.Decode(&params)
 
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, Envelope{"error": "error decoding json received"})
+		writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error decoding json received"})
 		log.Printf("error creating user: %v", err)
 		return
 	}
@@ -38,9 +38,13 @@ func (cfg *apiConfig) handleCreateUsers(w http.ResponseWriter, r *http.Request) 
 	u, err := cfg.db.CreateUser(r.Context(), params.Email)
 
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, Envelope{"error": "error creating user"})
+		writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error creating user"})
 		log.Printf("error creating user: %v", err)
 		return
+	}
+
+	type repsonse struct {
+		User
 	}
 
 	user := User{
@@ -50,8 +54,7 @@ func (cfg *apiConfig) handleCreateUsers(w http.ResponseWriter, r *http.Request) 
 		Email:     u.Email,
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	js, err := json.MarshalIndent(user, "", "  ")
-	w.Write(js)
-
+	writeJSON(w, http.StatusCreated, repsonse{
+		User: user,
+	})
 }

@@ -8,7 +8,9 @@ import (
 // Envelope: map donde el key es un string y el value es un interface vacio, que quiere decir que puede ser cualquier tipo de dato
 type Envelope map[string]interface{}
 
-func writeJSON(w http.ResponseWriter, status int, data Envelope) error {
+type Payload interface{}
+
+func writeJSON(w http.ResponseWriter, status int, data Payload) error {
 	js, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return err
