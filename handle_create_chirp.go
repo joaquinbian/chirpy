@@ -25,10 +25,6 @@ type Chirp struct {
 	UserID    uuid.UUID `json:"user_id"`
 }
 
-type response struct {
-	Chirp
-}
-
 func (cfg *apiConfig) handleCreateChirp(w http.ResponseWriter, r *http.Request) {
 	params := parameters{}
 
@@ -70,6 +66,9 @@ func (cfg *apiConfig) handleCreateChirp(w http.ResponseWriter, r *http.Request) 
 		log.Printf("error creating chirp: %w", err)
 		writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error creating chirp"})
 		return
+	}
+	type response struct {
+		Chirp
 	}
 
 	chirp := Chirp{
