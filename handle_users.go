@@ -1,6 +1,8 @@
 package main
 
 import (
+	"chirpy/internal/auth"
+	"chirpy/internal/database"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -10,7 +12,8 @@ import (
 )
 
 type createUserParams struct {
-	Email string
+	Email    string
+	Password string
 }
 type User struct {
 	ID        uuid.UUID `json:"id"`
@@ -35,7 +38,23 @@ func (cfg *apiConfig) handleCreateUsers(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	u, err := cfg.db.CreateUser(r.Context(), params.Email)
+	if params.Password == "" {
+		writeJSON(w, http.StatusBadRequest, Envelope{"error": "password is required"})
+		return
+	}
+
+	hashedPassword, err := auth.HashPassword(params.Password)
+
+	if err != nil {
+		log.Printf("error hashing password: %v", err)
+		writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error creating user"})
+		return
+	}
+
+	u, err := cfg.db.CreateUser(r.Context(), database.CreateUserParams{
+		Email:          params.Email,
+		HashedPassword: hashedPassword,
+	})
 
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error creating user"})
