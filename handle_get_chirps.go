@@ -52,7 +52,7 @@ func (cfg *apiConfig) handleGetChirps(w http.ResponseWriter, r *http.Request) {
 	chirps, err := cfg.db.GetChirps(r.Context())
 
 	if err != nil {
-		log.Printf("error getting chirps: %w", err)
+		log.Printf("error getting chirps: %v", err)
 		writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error getting chirps"})
 		return
 	}

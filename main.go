@@ -28,7 +28,7 @@ func main() {
 	db, err := sql.Open("postgres", dbUrl)
 
 	if err != nil {
-		log.Fatalf("error connecting to db: %w", err)
+		log.Fatalf("error connecting to db: %v", err)
 	}
 
 	mux := http.NewServeMux()

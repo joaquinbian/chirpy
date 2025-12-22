@@ -41,7 +41,7 @@ func (cfg *apiConfig) handleCreateChirp(w http.ResponseWriter, r *http.Request) 
 	err = isChirpValid(params.Body)
 
 	if err != nil {
-		log.Printf("invalid chirp: %w", err)
+		log.Printf("invalid chirp: %v", err)
 		writeJSON(w, http.StatusBadRequest, Envelope{"error": err})
 		return
 	}
@@ -51,7 +51,7 @@ func (cfg *apiConfig) handleCreateChirp(w http.ResponseWriter, r *http.Request) 
 	_, err = cfg.db.GetUserByID(r.Context(), params.UserId)
 
 	if err != nil {
-		message := "user with given id not exists"
+		const message string = "user with given id not exists"
 		log.Printf(message)
 		writeJSON(w, http.StatusBadRequest, Envelope{"error": message})
 		return
@@ -63,7 +63,7 @@ func (cfg *apiConfig) handleCreateChirp(w http.ResponseWriter, r *http.Request) 
 	})
 
 	if err != nil {
-		log.Printf("error creating chirp: %w", err)
+		log.Printf("error creating chirp: %v", err)
 		writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error creating chirp"})
 		return
 	}

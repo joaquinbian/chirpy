@@ -12,7 +12,7 @@ func (cfg *apiConfig) handleResetState(w http.ResponseWriter, r *http.Request) {
 	err := cfg.db.DeleteUsers(r.Context())
 
 	if err != nil {
-		log.Printf("error deleting users: %w", err)
+		log.Printf("error deleting users: %v", err)
 		writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error deleting users"})
 		return
 	}
