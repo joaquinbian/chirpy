@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chirpy/internal/auth"
 	"chirpy/internal/database"
 	"chirpy/internal/utils"
 	"encoding/json"
@@ -13,8 +14,7 @@ import (
 )
 
 type parameters struct {
-	Body   string    `json:"body"`
-	UserId uuid.UUID `json:"user_id"`
+	Body string `json:"body"`
 }
 
 type Chirp struct {
@@ -37,6 +37,21 @@ func (cfg *apiConfig) handleCreateChirp(w http.ResponseWriter, r *http.Request) 
 		writeJSON(w, http.StatusInternalServerError, Envelope{"Message": "Something went wrong"})
 		return
 	}
+	token, err := auth.GetBearerToken(r.Header)
+
+	if err != nil {
+		log.Printf("error GetBearerToken: %v", err)
+		writeJSON(w, http.StatusUnauthorized, Envelope{"error": "invalid token"})
+		return
+	}
+
+	id, err := auth.ValidateToken(token, cfg.jwtSecret)
+
+	if err != nil {
+		log.Printf("error ValidateToken: %v", err)
+		writeJSON(w, http.StatusUnauthorized, Envelope{"error": "invalid token"})
+		return
+	}
 
 	err = isChirpValid(params.Body)
 
@@ -45,21 +60,11 @@ func (cfg *apiConfig) handleCreateChirp(w http.ResponseWriter, r *http.Request) 
 		writeJSON(w, http.StatusBadRequest, Envelope{"error": err})
 		return
 	}
-
 	cleanedChirp := utils.CleanMessageProfane(params.Body)
-
-	_, err = cfg.db.GetUserByID(r.Context(), params.UserId)
-
-	if err != nil {
-		const message string = "user with given id not exists"
-		log.Printf(message)
-		writeJSON(w, http.StatusBadRequest, Envelope{"error": message})
-		return
-	}
 
 	c, err := cfg.db.CreateChirp(r.Context(), database.CreateChirpParams{
 		Body:   cleanedChirp,
-		UserID: params.UserId,
+		UserID: id,
 	})
 
 	if err != nil {
