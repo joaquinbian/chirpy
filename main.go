@@ -18,6 +18,7 @@ type apiConfig struct {
 	fileserverHits atomic.Int32
 	db             *database.Queries
 	mode           string
+	jwtSecret      string
 }
 
 func main() {
@@ -25,6 +26,7 @@ func main() {
 
 	dbUrl := os.Getenv("DB_URL")
 	mode := os.Getenv("PLATFORM")
+	secret := os.Getenv("SECRET_KEY")
 	db, err := sql.Open("postgres", dbUrl)
 
 	if err != nil {
@@ -44,6 +46,7 @@ func main() {
 		fileserverHits: atomic.Int32{},
 		db:             queries,
 		mode:           mode,
+		jwtSecret:      secret,
 	}
 
 	mux.HandleFunc("GET /api/healthz", handleHealth)
@@ -91,3 +94,40 @@ func (cfg *apiConfig) middlewareDevMode(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+/* func (cfg *apiConfig) middlewareLoggedIn(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token, err := auth.GetBearerToken(r.Header)
+
+		if err != nil {
+			log.Printf("error GetBearerToken: %v", err)
+			writeJSON(w, http.StatusUnauthorized, Envelope{"error": "invalid token"})
+			return
+		}
+
+		id, err := auth.ValidateToken(token, cfg.jwtSecret)
+
+		if err != nil {
+			log.Printf("error ValidateToken: %v", err)
+			writeJSON(w, http.StatusUnauthorized, Envelope{"error": "invalid token"})
+			return
+		}
+
+		user, err := cfg.db.GetUserByID(r.Context(), id)
+
+		if err != nil {
+			log.Printf("error GetUserByID: %v", err)
+			writeJSON(w, http.StatusUnauthorized, Envelope{"error": "invalid token"})
+			return
+		}
+
+		if user.ID.String() != id.String() {
+			log.Printf("error comparing user id: %v", err)
+			writeJSON(w, http.StatusUnauthorized, Envelope{"error": "invalid token"})
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+*/
