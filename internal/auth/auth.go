@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"log"
@@ -43,6 +45,7 @@ func ComparePasswordHash(password, hash string) (bool, error) {
 }
 
 func MakeJWT(userID uuid.UUID, tokenSecret string, expiresIn time.Duration) (string, error) {
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
 		Issuer:    string(TokenTypeAccess),
 		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
@@ -69,7 +72,7 @@ func ValidateToken(tokenString, tokenSecret string) (uuid.UUID, error) {
 	})
 
 	if err != nil {
-		log.Printf("error validating token: %v", err)
+		log.Printf("error parsing token: %v", err)
 		return uuid.Nil, errors.New("error validating token")
 	}
 
@@ -119,4 +122,17 @@ func GetBearerToken(headers http.Header) (string, error) {
 	token := authSplitted[1]
 
 	return token, nil
+}
+
+func MakeRefreshToken() (string, error) {
+	randomToken := make([]byte, 32)
+	_, err := rand.Read(randomToken)
+
+	if err != nil {
+		return "", errors.New("error creating random token")
+	}
+
+	rToken := hex.EncodeToString(randomToken)
+
+	return rToken, nil
 }

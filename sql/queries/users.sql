@@ -15,7 +15,7 @@ INSERT INTO users(
     RETURNING *;
 
 
--- name: DeleteUsers :exec
+-- name: DeleteUsers :
 DELETE FROM Users;
 
 -- name: GetUserByID :one

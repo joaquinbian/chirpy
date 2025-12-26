@@ -1,0 +1,32 @@
+-- name: CreateRefreshToken :one
+INSERT INTO refresh_tokens(
+    token,
+    created_at,
+    updated_at,
+    user_id,
+    expired_at,
+    revoked_at 
+) 
+VALUES (
+    $1,
+    NOW(),
+    NOW(),
+    $2,
+    $3,
+    NULL
+)
+RETURNING *;
+
+
+-- name: GetRefreshToken :one
+SELECT * FROM refresh_tokens WHERE token = $1;
+
+
+-- name: GetUserFromRefreshToken :one
+Select U.* FROM refresh_tokens RT 
+INNER JOIN users U ON U.id = RT.user_id
+WHERE token = $1;
+
+
+-- name: RevokeRefreshToken :exec
+UPDATE refresh_tokens SET revoked_at = $1, updated_at = $1 WHERE token = $2; 

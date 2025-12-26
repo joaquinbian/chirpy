@@ -21,6 +21,8 @@ type apiConfig struct {
 	jwtSecret      string
 }
 
+const EXP_TIME_SECONDS time.Duration = time.Second * 3600
+
 func main() {
 	godotenv.Load()
 
@@ -55,6 +57,8 @@ func main() {
 	mux.HandleFunc("POST /api/users", cfg.handleCreateUsers)
 	mux.HandleFunc("POST /api/login", cfg.handleLogin)
 	mux.HandleFunc("POST /api/chirps", cfg.handleCreateChirp)
+	mux.HandleFunc("POST /api/refresh", cfg.handleRefresh)
+	mux.HandleFunc("POST /api/revoke", cfg.handleRevoke)
 
 	mux.Handle("/app/", cfg.middlewareIncHits(http.StripPrefix("/app", http.FileServer(http.Dir(".")))))
 	mux.HandleFunc("GET /admin/metrics", cfg.handleCountRequests)
