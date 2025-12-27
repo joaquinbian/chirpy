@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-ALTER TABLE users ADD COLUMN is_chirpy_red BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN is_chirpy_red BOOLEAN DEFAULT FALSE NOT NULL;
 -- +goose StatementEnd
 
 -- +goose Down

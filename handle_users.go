@@ -72,7 +72,7 @@ func (cfg *apiConfig) handleCreateUsers(w http.ResponseWriter, r *http.Request) 
 		CreatedAt:   u.CreatedAt,
 		UpdatedAt:   u.UpdatedAt,
 		Email:       u.Email,
-		IsChirpyRed: u.IsChirpyRed.Bool,
+		IsChirpyRed: u.IsChirpyRed,
 	}
 
 	writeJSON(w, http.StatusCreated, repsonse{
