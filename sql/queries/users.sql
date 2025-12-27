@@ -25,4 +25,4 @@ SELECT * FROM users WHERE id = $1;
 SELECT * FROM users where email = $1;
 
 -- name: EditUser :one
-UPDATE users SET email = $1, hashed_password = $2 WHERE id = $3 RETURNING *;
+UPDATE users SET email = $1, hashed_password = $2, updated_at = NOW() WHERE id = $3 RETURNING *;
