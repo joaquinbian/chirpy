@@ -15,7 +15,7 @@ INSERT INTO users(
     RETURNING *;
 
 
--- name: DeleteUsers :
+-- name: DeleteUsers :exec
 DELETE FROM Users;
 
 -- name: GetUserByID :one
@@ -23,3 +23,6 @@ SELECT * FROM users WHERE id = $1;
 
 -- name: GetUserByEmail :one
 SELECT * FROM users where email = $1;
+
+-- name: EditUser :one
+UPDATE users SET email = $1, hashed_password = $2 WHERE id = $3 RETURNING *;
