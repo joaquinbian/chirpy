@@ -21,8 +21,8 @@ func (cfg *apiConfig) handleEditUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := auth.ValidateToken(token, cfg.jwtSecret)
 
 	if err != nil {
-		log.Printf("error getting token: %v", err)
-		writeJSON(w, http.StatusUnauthorized, Envelope{"error": "error getting token"})
+		log.Printf("error validating token: %v", err)
+		writeJSON(w, http.StatusUnauthorized, Envelope{"error": "error validating token"})
 		return
 	}
 
