@@ -68,10 +68,11 @@ func (cfg *apiConfig) handleEditUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := User{
-		ID:        u.ID,
-		CreatedAt: u.CreatedAt,
-		UpdatedAt: u.UpdatedAt,
-		Email:     u.Email,
+		ID:          u.ID,
+		CreatedAt:   u.CreatedAt,
+		UpdatedAt:   u.UpdatedAt,
+		Email:       u.Email,
+		IsChirpyRed: u.IsChirpyRed.Bool,
 	}
 
 	writeJSON(w, http.StatusOK, response{
