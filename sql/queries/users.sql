@@ -24,6 +24,9 @@ SELECT * FROM users WHERE id = $1;
 -- name: GetUserByEmail :one
 SELECT * FROM users where email = $1;
 
+-- name: GetUsers :many
+SELECT * FROM users;
+
 -- name: EditUser :one
 UPDATE users SET email = $1, hashed_password = $2, updated_at = NOW() WHERE id = $3 RETURNING *;
 
