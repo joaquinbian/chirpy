@@ -19,6 +19,7 @@ type apiConfig struct {
 	db             *database.Queries
 	mode           string
 	jwtSecret      string
+	polkaKey       string
 }
 
 const EXP_TIME_SECONDS time.Duration = time.Second * 3600
@@ -29,6 +30,7 @@ func main() {
 	dbUrl := os.Getenv("DB_URL")
 	mode := os.Getenv("PLATFORM")
 	secret := os.Getenv("SECRET_KEY")
+	polkaKey := os.Getenv("POLKA_KEY")
 	db, err := sql.Open("postgres", dbUrl)
 
 	if err != nil {
@@ -49,6 +51,7 @@ func main() {
 		db:             queries,
 		mode:           mode,
 		jwtSecret:      secret,
+		polkaKey:       polkaKey,
 	}
 
 	mux.HandleFunc("GET /api/healthz", handleHealth)

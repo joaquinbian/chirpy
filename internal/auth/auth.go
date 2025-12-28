@@ -136,3 +136,20 @@ func MakeRefreshToken() (string, error) {
 
 	return rToken, nil
 }
+
+func GetAPIKey(headers http.Header) (string, error) {
+
+	authorizationH := headers.Get("Authorization")
+
+	if len(authorizationH) == 0 {
+		return "", errors.New("no auth header provided")
+	}
+
+	authSplitted := strings.Split(authorizationH, " ")
+
+	if len(authSplitted) < 2 || authSplitted[0] != "ApiKey" {
+		return "", errors.New("invalid ApiKey header provided")
+	}
+
+	return authSplitted[1], nil
+}

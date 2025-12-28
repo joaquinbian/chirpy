@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chirpy/internal/auth"
 	"database/sql"
 	"encoding/json"
 	"log"
@@ -32,6 +33,19 @@ func (cfg *apiConfig) handleUserSuscription(w http.ResponseWriter, r *http.Reque
 
 	if params.Event != "user.upgraded" {
 		writeJSON(w, http.StatusNoContent, Envelope{})
+		return
+	}
+
+	apiKey, err := auth.GetAPIKey(r.Header)
+
+	if err != nil {
+		log.Printf("error getting api key: %v", err)
+		writeJSON(w, http.StatusUnauthorized, Envelope{"error": "forbidden request"})
+		return
+	}
+
+	if apiKey != cfg.polkaKey {
+		writeJSON(w, http.StatusUnauthorized, Envelope{"error": "forbidden request"})
 		return
 	}
 
