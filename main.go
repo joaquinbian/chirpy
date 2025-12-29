@@ -1,7 +1,6 @@
 package main
 
 import (
-	"chirpy/internal/database"
 	"database/sql"
 	"fmt"
 	"log"
@@ -10,6 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/joaquinbian/chirpy/internal/database"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )

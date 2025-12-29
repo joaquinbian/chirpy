@@ -1,11 +1,12 @@
 package main
 
 import (
-	"chirpy/internal/auth"
-	"chirpy/internal/database"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/joaquinbian/chirpy/internal/auth"
+	"github.com/joaquinbian/chirpy/internal/database"
 )
 
 func (cfg *apiConfig) handleEditUser(w http.ResponseWriter, r *http.Request) {

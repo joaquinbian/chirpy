@@ -1,14 +1,14 @@
 package main
 
 import (
-	"chirpy/internal/auth"
-	"chirpy/internal/database"
 	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joaquinbian/chirpy/internal/auth"
+	"github.com/joaquinbian/chirpy/internal/database"
 )
 
 type createUserParams struct {

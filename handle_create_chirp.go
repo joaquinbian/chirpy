@@ -1,9 +1,6 @@
 package main
 
 import (
-	"chirpy/internal/auth"
-	"chirpy/internal/database"
-	"chirpy/internal/utils"
 	"encoding/json"
 	"errors"
 	"log"
@@ -11,6 +8,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joaquinbian/chirpy/internal/auth"
+	"github.com/joaquinbian/chirpy/internal/database"
+	"github.com/joaquinbian/chirpy/internal/utils"
 )
 
 type parameters struct {
@@ -38,7 +38,6 @@ func (cfg *apiConfig) handleCreateChirp(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	token, err := auth.GetBearerToken(r.Header)
-
 	if err != nil {
 		log.Printf("error GetBearerToken: %v", err)
 		writeJSON(w, http.StatusUnauthorized, Envelope{"error": "invalid token"})

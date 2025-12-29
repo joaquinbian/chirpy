@@ -1,12 +1,12 @@
 package main
 
 import (
-	"chirpy/internal/auth"
 	"database/sql"
 	"log"
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/joaquinbian/chirpy/internal/auth"
 )
 
 func (cfg *apiConfig) handleDeleteChirp(w http.ResponseWriter, r *http.Request) {

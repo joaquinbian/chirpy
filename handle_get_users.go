@@ -1,9 +1,10 @@
 package main
 
 import (
-	"chirpy/internal/auth"
 	"log"
 	"net/http"
+
+	"github.com/joaquinbian/chirpy/internal/auth"
 )
 
 func (cfg *apiConfig) handleGetUsers(w http.ResponseWriter, r *http.Request) {

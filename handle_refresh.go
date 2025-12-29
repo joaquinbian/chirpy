@@ -1,11 +1,12 @@
 package main
 
 import (
-	"chirpy/internal/auth"
 	"database/sql"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/joaquinbian/chirpy/internal/auth"
 )
 
 func (cfg *apiConfig) handleRefresh(w http.ResponseWriter, r *http.Request) {

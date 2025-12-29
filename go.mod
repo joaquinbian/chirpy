@@ -1,4 +1,4 @@
-module chirpy
+module github.com/joaquinbian/chirpy
 
 go 1.25.1
 

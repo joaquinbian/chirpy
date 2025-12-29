@@ -1,12 +1,13 @@
 package main
 
 import (
-	"chirpy/internal/auth"
-	"chirpy/internal/database"
 	"database/sql"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/joaquinbian/chirpy/internal/auth"
+	"github.com/joaquinbian/chirpy/internal/database"
 )
 
 func (cfg *apiConfig) handleRevoke(w http.ResponseWriter, r *http.Request) {

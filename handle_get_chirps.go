@@ -1,13 +1,13 @@
 package main
 
 import (
-	"chirpy/internal/database"
 	"database/sql"
 	"log"
 	"net/http"
 	"sort"
 
 	"github.com/google/uuid"
+	"github.com/joaquinbian/chirpy/internal/database"
 )
 
 func (cfg *apiConfig) handleGetChirpByID(w http.ResponseWriter, r *http.Request) {

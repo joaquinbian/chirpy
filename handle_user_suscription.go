@@ -1,13 +1,13 @@
 package main
 
 import (
-	"chirpy/internal/auth"
 	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/joaquinbian/chirpy/internal/auth"
 )
 
 func (cfg *apiConfig) handleUserSuscription(w http.ResponseWriter, r *http.Request) {
