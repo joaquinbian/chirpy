@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"sort"
 
 	"github.com/google/uuid"
 )
@@ -52,6 +53,13 @@ func (cfg *apiConfig) handleGetChirps(w http.ResponseWriter, r *http.Request) {
 
 	queryID := r.URL.Query().Get("author_id")
 
+	sort := "asc"
+	sortParam := r.URL.Query().Get("sort")
+
+	if sortParam == "desc" {
+		sort = "desc"
+	}
+
 	if queryID != "" {
 
 		userID, err := uuid.Parse(queryID)
@@ -62,20 +70,10 @@ func (cfg *apiConfig) handleGetChirps(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		/* _, err = cfg.db.GetUserByID(r.Context(), userID)
-
-		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				writeJSON(w, http.StatusNotFound, Envelope{"error": "user with author_id provided not found"})
-				return
-			}
-
-			log.Printf("error getting user: %v", err)
-			writeJSON(w, http.StatusInternalServerError, Envelope{"error": "error getting user"})
-			return
-		} */
-
 		chirps, err := cfg.db.GetChirpByUserID(r.Context(), userID)
+
+		parsedChirps := parseChirps(chirps)
+		sortedChirps := sortChirps(parsedChirps, sort)
 
 		if err != nil {
 			log.Printf("error getting chrips: %v", err)
@@ -83,11 +81,14 @@ func (cfg *apiConfig) handleGetChirps(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		writeJSON(w, http.StatusOK, parseChirps(chirps))
+		writeJSON(w, http.StatusOK, sortedChirps)
 		return
 	}
 
 	chirps, err := cfg.db.GetChirps(r.Context())
+
+	parsedChirps := parseChirps(chirps)
+	sortedChirps := sortChirps(parsedChirps, sort)
 
 	if err != nil {
 		log.Printf("error getting chirps: %v", err)
@@ -95,7 +96,7 @@ func (cfg *apiConfig) handleGetChirps(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, parseChirps(chirps))
+	writeJSON(w, http.StatusOK, sortedChirps)
 }
 
 func parseChirps(dbChirps []database.Chirp) []Chirp {
@@ -112,4 +113,19 @@ func parseChirps(dbChirps []database.Chirp) []Chirp {
 	}
 
 	return parsedChirps
+}
+
+func sortChirps(chirps []Chirp, mode string) []Chirp {
+	if mode == "asc" {
+		sort.Slice(chirps, func(i, j int) bool {
+			return chirps[i].CreatedAt.Before(chirps[j].CreatedAt)
+		})
+	} else if mode == "desc" {
+		sort.Slice(chirps, func(i, j int) bool {
+			return chirps[i].CreatedAt.After(chirps[j].CreatedAt)
+
+		})
+	}
+
+	return chirps
 }
